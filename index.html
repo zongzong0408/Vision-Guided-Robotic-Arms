@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>視覺導引機器手臂：零基礎教學互動簡報</title>
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --card-bg: rgba(20, 27, 45, 0.85);
+      --card-border: rgba(56, 189, 248, 0.25);
+      --card-hover: rgba(56, 189, 248, 0.45);
+      --accent-blue: #38bdf8;
+      --accent-cyan: #22d3ee;
+      --accent-indigo: #818cf8;
+      --accent-amber: #fbbf24;
+      --accent-emerald: #34d399;
+      --accent-rose: #fb7185;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --highlight-bg: rgba(56, 189, 248, 0.12);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08), transparent 60%),
+                        radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.06), transparent 50%);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Top Navigation Header */
+    header {
+      height: 56px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(10, 14, 23, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e8f0;
+      letter-spacing: -0.2px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      padding: 3px 12px;
+      border-radius: 20px;
+    }
+
+    /* Main Slides Container */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 24px 32px 16px 32px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(12px) scale(0.99);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Slide Header */
+    .slide-title-bar {
+      margin-bottom: 18px;
+    }
+
+    .slide-tag-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .slide-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .slide-chapter {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .slide-heading {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .slide-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--accent-cyan);
+    }
+
+    /* Two-column Content Body */
+    .slide-content-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 20px;
+      min-height: 0;
+      margin-bottom: 14px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      overflow-y: auto;
+    }
+
+    .card::-webkit-scrollbar {
+      width: 5px;
+    }
+    .card::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card-left .card-header {
+      color: var(--accent-amber);
+    }
+
+    .card-right .card-header {
+      color: var(--accent-blue);
+    }
+
+    .metaphor-box {
+      background: rgba(251, 191, 36, 0.08);
+      border-left: 3px solid var(--accent-amber);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #fef3c7;
+      margin-bottom: 12px;
+    }
+
+    .story-text {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    .diagram-panel {
+      background: #0d1322;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(10px, 1vw, 11.5px);
+      line-height: 1.45;
+      color: #38bdf8;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-top: auto;
+      overflow-x: hidden;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow-y: auto;
+      }
+      .slide-content-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .slide {
+        padding: 14px 16px;
+        position: relative;
+        height: auto;
+        min-height: calc(100vh - 104px);
+      }
+      footer {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 16px;
+        gap: 8px;
+      }
+      .citation-tag {
+        font-size: 11px;
+        flex-wrap: wrap;
+      }
+    }
+
+    .tech-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tech-item {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #e2e8f0;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .tech-item::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+
+    .tech-item strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .stat-badge-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 10px;
+    }
+
+    .stat-badge {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      letter-spacing: -0.5px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Bottom Key Takeaway Banner */
+    .takeaway-banner {
+      background: linear-gradient(90deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      border-left: 4px solid var(--accent-emerald);
+      border-radius: 8px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .takeaway-pill {
+      font-size: 11px;
+      font-weight: 800;
+      color: #047857;
+      background: #a7f3d0;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .takeaway-text {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #f0fdf4;
+      line-height: 1.4;
+    }
+
+    /* Footer & Navigation Controls */
+    footer {
+      height: 48px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(10, 14, 23, 0.95);
+      font-size: 12px;
+      color: var(--text-dim);
+      z-index: 100;
+    }
+
+    .citation-tag {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .citation-tag code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-indigo);
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 11px;
+    }
+
+    .citation-tag strong {
+      color: var(--accent-cyan);
+    }
+
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .keyboard-hint {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-left: 8px;
+    }
+
+    .keyboard-hint kbd {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text-muted);
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 12.5%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-group">
+      <span class="brand-badge">NTU COOL 作業成果</span>
+      <h1 class="brand-title">視覺導引機器手臂（Vision-Guided Robotic Arms）教學簡報</h1>
+    </div>
+    <div class="header-controls">
+      <span class="slide-counter" id="slideCounter">1 / 8</span>
+    </div>
+  </header>
+
+  <!-- Main Slides Viewport -->
+  <main>
+
+    <!-- Slide 1 -->
+    <section class="slide active" data-index="1">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 01</span>
+          <span class="slide-chapter">破題概論 · 核心架構</span>
+        </div>
+        <h2 class="slide-heading">
+          從盲人摸象到靈魂三問
+          <span class="slide-subtitle">——什麼是視覺導引機械手臂？</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 生活化比喻與直覺情境</div>
+          <div class="metaphor-box">
+            <strong>想像一下：</strong>如果閉上雙眼拿筷子夾桌上的荷包蛋，你只能憑記憶往固定位置夾。只要盤子稍微被推開 1 公分，你就必定夾空！
+          </div>
+          <p class="story-text">
+            傳統工業手臂也是個<strong>「精確的盲人」</strong>：工程師在程式裡寫死移動座標，手臂就日夜不停重複揮動。一旦輸送帶上的零件歪斜或滑落，機械手臂不僅抓不到，還可能直接把設備撞得粉碎！
+          </p>
+          <div class="diagram-panel">
+【機器人閉迴路：靈魂三問】
+[眼睛 眼] 看到什麼？      ──> 物件辨識與分類 (YOLO)
+[大腦 腦] 它在空間哪裡？  ──> 3D 深度感知與未來落點預判
+[肌肉 手] 關節該怎麼轉？  ──> 逆運動學與平滑減震控制</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ 核心技術機制與系統整合</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>眼手協調大迴路：</strong>將「相機影像擷取」、「AI 演算法決策」與「高精密馬達控制」串聯成毫秒級的連續閉迴路反饋系統。</li>
+            <li class="tech-item"><strong>從開迴路到閉迴路：</strong>傳統手臂發出指令後無法得知結果；視覺伺服系統則能每秒數十次持續比對夾爪與目標的即時偏差，動態修正軌跡。</li>
+            <li class="tech-item"><strong>跨學科無縫整合：</strong>融合機構學（連桿與馬達）、光學與幾何（相機與透視）、控制工程（反饋迴路）以及現代人工智慧。</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">33 ms</span>
+              <span class="stat-label">即時影像辨識與決策週期 (30 FPS)</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">0 mm</span>
+              <span class="stat-label">閉迴路即時誤差修正容忍空間</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">視覺導引就像替冰冷僵硬的機械手臂裝上雙眼與大腦，賦予它面對現實世界混亂時「隨機應變」的抓取能力！</span>
+      </div>
+    </section>
+
+    <!-- Slide 2 -->
+    <section class="slide" data-index="2">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 02</span>
+          <span class="slide-chapter">機構基礎 · 運動學解密</span>
+        </div>
+        <h2 class="slide-heading">
+          骨骼、關節與肌肉
+          <span class="slide-subtitle">——手臂如何精確計算各軸該轉幾度？</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 人體解剖學比喻</div>
+          <div class="metaphor-box">
+            <strong>肩膀、手肘與手腕：</strong>你想抓桌上一杯水，大腦不會去想「二頭肌要收縮幾公分」，而是直覺看到杯子位置，手臂自動擺出最佳姿勢。
+          </div>
+          <p class="story-text">
+            <strong>正向運動學（FK）</strong>：告訴你每個關節轉幾度，計算指尖在哪（唯一解，像算術乘法一樣簡單）。<br>
+            <strong>逆向運動學（IK）</strong>：看到前方有顆蘋果，倒推肩膀、手肘關節各該轉幾度才能碰觸（非線性聯立方程，可能多解甚至卡死在奇異點！）。
+          </p>
+          <div class="diagram-panel">
+[關節空間 (θ1, θ2, θ3, θ4)] ── 正向運動學 (FK) ──> [空間位置 (X, Y, Z)]
+[關節空間 (θ1, θ2, θ3, θ4)] <── 逆向運動學 (IK) ── [空間位置 (X, Y, Z)]
+                           (幾何解析解：耗時 < 1 ms！)</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ 機構模擬與幾何解析突破</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>4 軸 vs. 6 軸自由度（DOF）：</strong>4 軸手臂結構精簡、運算極速，適合平面拾放；6 軸手臂能任意控制 3D 位置與傾角（Roll, Pitch, Yaw），勝任複雜角度抓取。</li>
+            <li class="tech-item"><strong>CAE 動態模擬選型：</strong>利用 Inventor 建立 3D 骨架，匯入 ADAMS 與 Simulink 模擬極限負載，精準計算最大扭力選定馬達，避免過載燒毀。</li>
+            <li class="tech-item"><strong>幾何解析解取代數值迭代：</strong>利用餘弦定理拆解三角形，將複雜逆運動學降解為封閉解析解，保證在 1 毫秒內算完！</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">&lt; 1 ms</span>
+              <span class="stat-label">幾何解析解逆運動學運算耗時</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">6-DOF</span>
+              <span class="stat-label">全方位空間姿態自由度</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">逆運動學是手眼協調的幾何大腦；透過精巧的三角幾何解析解，能讓手臂在毫秒內算好馬達角度，流暢不卡頓！</span>
+      </div>
+    </section>
+
+    <!-- Slide 3 -->
+    <section class="slide" data-index="3">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 03</span>
+          <span class="slide-chapter">手眼配置 · 架構對決</span>
+        </div>
+        <h2 class="slide-heading">
+          眼睛該長在哪裡？
+          <span class="slide-subtitle">——「長在指尖」vs「掛在天花板」</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 生活化配置比喻</div>
+          <div class="metaphor-box">
+            <strong>指尖放大鏡 vs. 天花板監視器：</strong>把放大鏡綁在食指上，近看電路板超級清楚；但監視器掛在房間天花板，能一覽全場動態，可惜自己的身體容易擋住視線！
+          </div>
+          <p class="story-text">
+            <strong>眼在手（Eye-in-Hand）</strong>：相機固定在夾爪旁，隨手移動。<br>
+            <strong>眼到手（Eye-to-Hand）</strong>：相機架設在工作台上方，俯瞰全局。<br>
+            兩者在機械負載、視角範圍與抗震動特性上有著本質的工程取捨。
+          </p>
+          <div class="diagram-panel">
+【Eye-in-Hand (眼在手)】      【Eye-to-Hand (眼到手)】
+     [手臂連桿]                   [固定天花板相機] 📷
+         │                              │ (俯瞰全景)
+     [夾爪 + 相機 📷]                   ▼
+         ▼ (近距特寫)              [手臂連桿] ➔ [物件 📦]
+      [物件 📦]</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ 工程特性深度對比</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>眼在手優點：</strong>視野跟隨夾爪前進，越靠近目標解析度越高；完全不受工作台外圍障礙物遮擋，移動工作站免重新校正外部相機。</li>
+            <li class="tech-item"><strong>眼在手挑戰：</strong>相機增加末端配重，快速甩動時運動慣性變大且畫面劇烈晃動產生模糊。</li>
+            <li class="tech-item"><strong>眼到手優點：</strong>全景視野隨時掌控全局物體分佈，夾爪輕量化運動敏捷，相機完全靜止無震動。</li>
+            <li class="tech-item"><strong>眼到手挑戰：</strong>手臂伸出時可能遮蔽目標視線，遠距離像素解析度受限。</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">箱內深取</span>
+              <span class="stat-label">眼在手 (Eye-in-Hand) 最佳戰場</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">全速流水線</span>
+              <span class="stat-label">眼到手 (Eye-to-Hand) 最佳戰場</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">沒有完美的硬體配置，只有最適合場景的選擇：深箱精細夾取選「眼在手」，大範圍流水線分揀選「眼到手」！</span>
+      </div>
+    </section>
+
+    <!-- Slide 4 -->
+    <section class="slide" data-index="4">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 04</span>
+          <span class="slide-chapter">運動控制 · 減震平滑</span>
+        </div>
+        <h2 class="slide-heading">
+          告別手震與急煞
+          <span class="slide-subtitle">——如何讓機械手臂優雅起步與平穩剎車？</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 老司機開車比喻</div>
+          <div class="metaphor-box">
+            <strong>暴躁司機 vs. 專業司機：</strong>綠燈一亮猛踩油門到底、紅燈前一腳急煞，乘客必定暈車嘔吐；老司機輕踩起步、等速巡航、平順緩煞，連一杯水都不會灑出來！
+          </div>
+          <p class="story-text">
+            機械手臂擁有沈重的金屬骨骼與馬達。如果直接發送「最高速衝刺、立刻停止」的粗暴階躍指令，龐大的<strong>剛體慣性（Inertia）</strong>會引發劇烈抖動，不僅夾爪物件甩飛，齒輪更會在幾百次後崩牙磨損！
+          </p>
+          <div class="diagram-panel">
+速度 (v)
+  ^
+  │        ┌────────────────┐ (勻速巡航)
+  │       /                  \
+  │      / (梯形加速)         \ (梯形減速)
+  │     /                      \
+  └───┴────────────────────────┴───> 時間 (t)
+  ★ 進階升級：三次多項式內插 (S 型連續曲線，消滅加速度突波！)</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ 梯形速度曲線與三次多項式內插</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>經典梯形速度曲線：</strong>將運動拆解為「定加速度起跑」、「等速巡航」與「定減速度煞停」，消弭瞬時速度暴衝。</li>
+            <li class="tech-item"><strong>三次多項式內插法：</strong>梯形曲線在斜率切換點仍存在「加加速度不連續（Jerk）」。引入三次方程式 <em>s</em>(<em>t</em>) = <em>a</em><sub>0</sub> + <em>a</em><sub>1</sub><em>t</em> + <em>a</em><sub>2</sub><em>t</em><sup>2</sup> + <em>a</em><sub>3</sub><em>t</em><sup>3</sup>，確保加速度平滑漸變。</li>
+            <li class="tech-item"><strong>大腦與肌肉時序解耦：</strong>相機影像處理需 33ms，馬達控制週期僅 5ms。採用多執行緒非同步佇列，影像背景高速更新，馬達依平滑曲線穩定插值，徹底告別頓挫！</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">&gt; 65%</span>
+              <span class="stat-label">三次多項式內插末端震動振幅衰減</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">5 ms</span>
+              <span class="stat-label">馬達 PWM 平滑內插控制週期</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">優雅的數學平滑曲線，是保護高精密機械零件、避免夾取工件脫落以及消弭殘餘震動的關鍵防線！</span>
+      </div>
+    </section>
+
+    <!-- Slide 5 -->
+    <section class="slide" data-index="5">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 05</span>
+          <span class="slide-chapter">3D 深度感知 · 實證規律</span>
+        </div>
+        <h2 class="slide-heading">
+          從平面照片看透 3D 深度
+          <span class="slide-subtitle">——機器人破解距離的「500 mm 黃金法則」</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 人眼視差與蝙蝠聲納</div>
+          <div class="metaphor-box">
+            <strong>你怎麼知道杯子有多遠？</strong>把食指放在眼前，閉左眼、再閉右眼，食指位置跳動極大；看遠處高樓時，兩眼跳動極小。這個跳動量就叫「視差（Disparity）」！
+          </div>
+          <p class="story-text">
+            普通相機只能拍出扁平照片。為了測出距離 <em>Z</em>，科學家發明了三大法寶：<br>
+            1. <strong>雙目立體視覺</strong>：雙相機靠視差幾何三角形測距。<br>
+            2. <strong>相似三角形幾何法</strong>：已知物體大小，靠畫面成像比例推算。<br>
+            3. <strong>RGB-D / 光達相機</strong>：發射紅外光脈衝直接計算光子往返時間。
+          </p>
+          <div class="diagram-panel">
+【實證檢驗：500 mm 深度分界律】
+• 距離 &lt; 500 mm：相似三角形法幾何誤差僅 1~4 mm！
+  (深度相機易受近距強反射光斑過曝產生盲區)
+• 距離 &gt; 500 mm：RGB-D 深度相機抗雜訊極強，
+  夾取成功率達到完美 100%！幾何法誤差則升至 13 mm。</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ 論文嚴謹實測：500 mm 分界規律</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>近距離盲區陷阱（&lt; 500 mm）：</strong>主動式光達深度鏡頭（如 RealSense L515）在距離小於 350mm 時，紅外光束過於集中產生強烈反射飽和，深度讀數大量歸零！</li>
+            <li class="tech-item"><strong>幾何逆襲（&lt; 500 mm）：</strong>純單眼相似三角形推算法在此區間大獲全勝，深度量測誤差僅 <strong>1~4 mm</strong>，且不需昂貴高階光達。</li>
+            <li class="tech-item"><strong>遠距離王者（&gt; 500 mm）：</strong>幾何法隨距離增加誤差急遽放大到 13mm 導致夾空；而 RGB-D 深度相機誤差僅 <strong>1~2 mm</strong>，夾取成功率達到完美 <strong>100%</strong>！</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">1 ~ 4 mm</span>
+              <span class="stat-label">&lt;500mm 相似三角形幾何法超低誤差</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">100 %</span>
+              <span class="stat-label">&gt;500mm RGB-D 深度相機夾取成功率</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">50 公分是空間感知的黃金分水嶺：近距離巧用幾何相似形經濟精確，遠距離仰賴光達深度相機百發百中！</span>
+      </div>
+    </section>
+
+    <!-- Slide 6 -->
+    <section class="slide" data-index="6">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 06</span>
+          <span class="slide-chapter">動態追蹤 · 時序預測</span>
+        </div>
+        <h2 class="slide-heading">
+          精準預言家
+          <span class="slide-subtitle">——如何在輸送帶上攔截高速移動的目標？</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 外野手接球比喻</div>
+          <div class="metaphor-box">
+            <strong>你過馬路或接飛盤時：</strong>你絕對不會跑向車子或飛盤「現在的位置」，而是提前跑到它「2 秒後的未來落點」提前埋伏！
+          </div>
+          <p class="story-text">
+            <strong>致命的物理延遲（Latency）：</strong>相機曝光 + YOLO 辨識 + 座標轉換 + 手臂機械揮動，整套流程需要數十毫秒。如果瞄準相機拍到的位置衝過去，等手臂抵達時，物件早就滑走了幾公分，只能夾到空氣！
+          </p>
+          <div class="diagram-panel">
+時間 t0: 相機拍下瓶子在 A 點 ──┐
+時間 t1: YOLO 辨識花 30ms      │
+時間 t2: 手臂揮動花 300ms      ├─> 瞄準 A 點必定夾空！
+時間 t3: 手臂抵達 ────────────┘    瓶子早就滑到 B 點！
+★ 救星：卡爾曼濾波器直接預測 t3 時刻的 B 點，提前埋伏！</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ YOLOv10 鎖定 + 卡爾曼濾波雙重防線</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>YOLOv10 即時無延遲辨識：</strong>利用最新架構分類寶特瓶與鋁罐，具備無 NMS 延遲優勢，以極低算力實現超高幀率偵測。</li>
+            <li class="tech-item"><strong>目標鎖定機制（Locking）：</strong>當傳送帶同時出現多個物件時，距離連續性鎖定演算法防止 ID 頻繁跳動，徹底根除手臂「選擇障礙」。</li>
+            <li class="tech-item"><strong>卡爾曼濾波器（Kalman Filter）：</strong>建立二維等速度運動物理模型，透過卡爾曼增益壓制相機像素抖動雜訊。即便相機因手臂遮擋短暫漏檢 1~2 幀，濾波器依然能無縫預測未來落點！</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">0.001 ms</span>
+              <span class="stat-label">單應性矩陣平面座標映射耗時</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">100 %</span>
+              <span class="stat-label">短暫遮擋漏檢下的軌跡預測持續率</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">動態抓取不能靠肉眼死追！必須靠卡爾曼濾波器化身預言家，提前埋伏在物體前進路線的未來落點！</span>
+      </div>
+    </section>
+
+    <!-- Slide 7 -->
+    <section class="slide" data-index="7">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 07</span>
+          <span class="slide-chapter">前沿 AI · 主動探索</span>
+        </div>
+        <h2 class="slide-heading">
+          雜亂堆疊怎麼抓？
+          <span class="slide-subtitle">——手臂學會「探頭探腦」自主換角度看！</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 抽屜翻找鑰匙比喻</div>
+          <div class="metaphor-box">
+            <strong>東西塞滿抽屜看不清：</strong>鑰匙被筆記本壓在下面，你站在正上方拍一張照片絕對看不懂。這時你會自然側下身、歪頭從縫隙探望！
+          </div>
+          <p class="story-text">
+            傳統工業手臂採用<strong>「被動視覺」</strong>：相機定在上方拍一張就死心，面對雜亂堆疊常因互相遮擋而產生點雲破洞，導致夾爪撞擊。<br>
+            前沿研究賦予手臂<strong>「主動視覺（Active Perception）」</strong>：讓手臂自己移動相機換視角，探索最容易夾取的角度！
+          </p>
+          <div class="diagram-panel">
+【主動視角選擇與特徵記憶閉迴路】
+當前視角 ──> 抽取潛在夾取特徵 ──> GTAM 時序記憶累積
+   ▲                                       │
+   └───── A3C 強化學習輸出最佳探頭動作 <──────┘
+   (不用暴力拼接幾百萬點雲，只記神經網路特徵，既快又抗噪！)</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ A3C 深度強化學習與 GTAM 記憶</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>A3C 強化學習決策：</strong>大腦在模擬環境中經過數千次自我探索，學會「相機該側轉幾度才能看穿死角」，若新視角能顯著提升抓取信心便給予正獎勵。</li>
+            <li class="tech-item"><strong>拒絕暴力點雲拼接（Fusion）：</strong>將多視角數百萬 3D 點雲硬拼會累積微米級對齊雜訊且運算崩潰。論文改採<strong>潛在特徵記憶（Latent-Feature Memory）</strong>，大幅精簡算力！</li>
+            <li class="tech-item"><strong>GTAM 門控時序注意力：</strong>走訪第三個視角時，大腦能智慧連結並回想第一、第二視角探測到的幾何線索，綜合評估最佳抓取姿態。</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">A3C</span>
+              <span class="stat-label">非同步優勢演員評論家決策網路</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">GTAM</span>
+              <span class="stat-label">門控時序注意力記憶顯著提升 AP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">看不清楚不要硬猜！讓手臂大腦自己探索最佳視角，並只保留神經網路關鍵特徵，省算力又抗遮蔽！</span>
+      </div>
+    </section>
+
+    <!-- Slide 8 -->
+    <section class="slide" data-index="8">
+      <div class="slide-title-bar">
+        <div class="slide-tag-row">
+          <span class="slide-pill">SLIDE 08</span>
+          <span class="slide-chapter">精度驗證 · 跨界突破</span>
+        </div>
+        <h2 class="slide-heading">
+          機器手臂體檢大作戰
+          <span class="slide-subtitle">——用掃地機技術省下數百萬檢測費！</span>
+        </h2>
+      </div>
+
+      <div class="slide-content-grid">
+        <!-- Left: Metaphor -->
+        <div class="card card-left">
+          <div class="card-header">💡 奧運射箭神射手比喻</div>
+          <div class="metaphor-box">
+            <strong>射箭要看兩件事：</strong>「準不準」（有沒有正中紅心，這叫<strong>準確度 AP</strong>）與「穩不穩」（十支箭是不是都插在同一個小孔裡，這叫<strong>重複精度 RP</strong>）。
+          </div>
+          <p class="story-text">
+            手臂組裝晶片時，誤差不能超過半根頭髮。國際標準 <strong>ISO 9283</strong> 規範了嚴格的體檢流程。<br>
+            <strong>產業巨大痛點：</strong>傳統檢測必須依賴百萬級「雷射追蹤儀」，體積笨重、校正耗時數小時，且雷射光只要被手臂遮擋就立刻中斷！
+          </p>
+          <div class="diagram-panel">
+【百萬雷射追蹤儀 vs. SLAM 創新跨界】
+傳統雷射追蹤儀：台幣數百萬元、嬌貴易遮蔽中斷、搭架耗時
+臺大跨界突破  ：將 2D LiDAR 光達裝在手臂上，利用 SLAM 自主定位
+震撼實測成果  ：達成 0.0353 mm (35微米) 工業級超高精度！</div>
+        </div>
+
+        <!-- Right: Tech & Stats -->
+        <div class="card card-right">
+          <div class="card-header">⚙️ 臺大跨界創新：SLAM 工業性能評估</div>
+          <ul class="tech-list">
+            <li class="tech-item"><strong>掃地機技術的降維打擊：</strong>自駕車與掃地機常用的 <strong>SLAM（同步定位與建圖）</strong> 技術，竟能反向用來為機械手臂做精確動態軌跡體檢！</li>
+            <li class="tech-item"><strong>LiDAR-SLAM 傲人數據：</strong>結合 2D LiDAR 與 Cartographer SLAM 演算法，在連續重複軌跡估計中達成 <strong>0.0353 mm（35 微米）</strong> 均方根誤差！</li>
+            <li class="tech-item"><strong>成本暴降兩個數量級：</strong>相較於數百萬的雷射追蹤儀，工業級 2D 光達僅需數萬元，以 <strong>1/100 成本</strong> 完全滿足 ISO 9283 平移精度標準！</li>
+          </ul>
+
+          <div class="stat-badge-row">
+            <div class="stat-badge">
+              <span class="stat-value">0.0353 mm</span>
+              <span class="stat-label">2D LiDAR SLAM 軌跡均方根誤差 (RMSE)</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-value">1 / 100</span>
+              <span class="stat-label">硬體建置成本 (相較傳統雷射追蹤儀)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway-banner">
+        <span class="takeaway-pill">重點結論</span>
+        <span class="takeaway-text">善用 SLAM 演算法創新，平價的 2D 光達也能以 1/100 成本達成 35 微米航太級超高精度檢驗！</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer & Controls -->
+  <footer>
+    <div class="citation-tag" id="citationTag">
+      📚 知識庫來源：<code id="wikiFileLabel">index.md</code> ｜ 論文出處：<strong id="paperCitationLabel">[文獻 5, 7]</strong>
+    </div>
+
+    <div class="nav-buttons">
+      <span class="keyboard-hint">支援鍵盤 <kbd>←</kbd> <kbd>→</kbd> <kbd>Space</kbd></span>
+      <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>
+        <span>◀</span> 上一頁
+      </button>
+      <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+        下一頁 <span>▶</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Inline Navigation Logic (Zero External Dependencies) -->
+  <script>
+    const citations = {
+      1: { wiki: "index.md", papers: "[文獻 5, 7]" },
+      2: { wiki: "01_mechanics_and_kinematics.md", papers: "[文獻 2, 6, 7]" },
+      3: { wiki: "01_mechanics_and_kinematics.md", papers: "[文獻 2, 5, 6, 7]" },
+      4: { wiki: "01_mechanics_and_kinematics.md", papers: "[文獻 5, 6]" },
+      5: { wiki: "02_vision_and_depth_perception.md", papers: "[文獻 2, 6, 7]" },
+      6: { wiki: "02_vision_and_depth_perception.md", papers: "[文獻 1]" },
+      7: { wiki: "03_advanced_intelligence_and_evaluation.md", papers: "[文獻 4]" },
+      8: { wiki: "03_advanced_intelligence_and_evaluation.md", papers: "[文獻 3]" }
+    };
+
+    let currentIndex = 1;
+    const totalSlides = 8;
+
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    const progressBar = document.getElementById('progressBar');
+    const wikiFileLabel = document.getElementById('wikiFileLabel');
+    const paperCitationLabel = document.getElementById('paperCitationLabel');
+
+    function updateSlide(newIndex) {
+      if (newIndex < 1 || newIndex > totalSlides) return;
+      
+      slides.forEach(slide => {
+        const idx = parseInt(slide.getAttribute('data-index'), 10);
+        if (idx === newIndex) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      currentIndex = newIndex;
+      slideCounter.textContent = `${currentIndex} / ${totalSlides}`;
+      progressBar.style.width = `${(currentIndex / totalSlides) * 100}%`;
+
+      // Update citations
+      if (citations[currentIndex]) {
+        wikiFileLabel.textContent = citations[currentIndex].wiki;
+        paperCitationLabel.textContent = citations[currentIndex].papers;
+      }
+
+      // Update button states
+      prevBtn.disabled = (currentIndex === 1);
+      nextBtn.disabled = (currentIndex === totalSlides);
+    }
+
+    function prevSlide() {
+      if (currentIndex > 1) updateSlide(currentIndex - 1);
+    }
+
+    function nextSlide() {
+      if (currentIndex < totalSlides) updateSlide(currentIndex + 1);
+    }
+
+    // Keyboard controls
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        updateSlide(1);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        updateSlide(totalSlides);
+      }
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const diffX = touchEndX - touchStartX;
+      if (diffX < -50) nextSlide();
+      if (diffX > 50) prevSlide();
+    }, { passive: true });
+  </script>
+</body>
+</html>
